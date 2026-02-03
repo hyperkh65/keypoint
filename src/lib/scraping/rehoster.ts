@@ -20,7 +20,7 @@ export class ImageRehoster {
                 timeout: 25000
             });
 
-            if (!response.data || response.data.length < 5000) return null; // Skip tiny/broken images
+            if (!response.data || response.data.length < 30000) return null; // Skip tiny/low-quality images (min 30KB)
 
             // 2. Smart Processing: Preserve quality while optimizing size
             let processedBuffer: Buffer;
