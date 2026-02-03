@@ -27,7 +27,7 @@ export class AutomationManager {
             // 1. Optimized Deep Scraping
             await prisma.job.update({
                 where: { id: jobId },
-                data: { status: 'SCRAPING', currentStep: '고품질 이미지 200장 핵심 선별 중...' }
+                data: { status: 'SCRAPING', currentStep: '고품질 이미지 100장 핵심 선별 중...' }
             });
             const scraper = new ScrapingEngine();
             const articles = await scraper.searchAndScrape(job.keyword);
@@ -70,13 +70,13 @@ export class AutomationManager {
                     image3: rehostedImages[2] || null,
                     image4: rehostedImages[3] || null,
                     image5: rehostedImages[4] || null,
-                    currentStep: '대표 이미지 확보 완료! 나머지 고화질 이미지 45장 처리 중...'
+                    currentStep: '나머지 고화질 이미지 95장 초고속 처리 중... (병렬 가속)'
                 }
             });
 
             // STEP 2-B: Process remaining in parallel batches
             const remainingCandidates = candidates.slice(10);
-            const CHUNK_SIZE = 8; // Increased parallelism
+            const CHUNK_SIZE = 25; // Massive parallelism (3x faster)
             for (let i = 0; i < remainingCandidates.length && rehostedImages.length < MAX_IMAGES; i += CHUNK_SIZE) {
                 const chunk = remainingCandidates.slice(i, i + CHUNK_SIZE);
                 const results = await Promise.all(
