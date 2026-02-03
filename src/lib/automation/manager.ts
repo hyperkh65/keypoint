@@ -96,8 +96,13 @@ export class AutomationManager {
                 where: { id: jobId },
                 data: {
                     status: 'COMPLETED',
-                    currentStep: '완료! 완벽하게 리사이징된 이미지 50여 장이 노션에 준비되었습니다.',
-                    notionUrl: (notionPage as any).url
+                    currentStep: '완료! 최적화된 이미지 50여 장과 리포트가 생성되었습니다.',
+                    notionUrl: (notionPage as any).url,
+                    image1: rehostedImages[0] || null,
+                    image2: rehostedImages[1] || null,
+                    image3: rehostedImages[2] || null,
+                    image4: rehostedImages[3] || null,
+                    image5: rehostedImages[4] || null,
                 }
             });
 
