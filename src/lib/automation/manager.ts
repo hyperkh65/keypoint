@@ -4,6 +4,7 @@ import { ScrapingEngine } from '../scraping/engine';
 import { AIMerger } from '../ai/merger';
 import { NotionSaver } from '../notion/saver';
 import { ImageRehoster } from '../scraping/rehoster';
+import { AirtableSaver } from '../airtable/saver';
 
 export class AutomationManager {
     async runJob(jobId: string) {
@@ -132,6 +133,35 @@ export class AutomationManager {
                     imageUrls: rehostedImages.join(',')
                 }
             });
+
+            // --- AIRTABLE SAVING (POWERFUL ASSET MANAGEMENT) ---
+            try {
+                // Use environment variable for security
+                const airtableToken = process.env.AIRTABLE_PAT!;
+                const airtableBaseId = 'appNsMkvQu9IpnliR';
+                const airtableTableName = 'Table 1'; // Default table name
+
+                if (!airtableToken) {
+                    console.warn('[PIPELINE] Skipping Airtable: AIRTABLE_PAT not set.');
+                } else {
+                    const airtableSaver = new AirtableSaver(airtableToken, airtableBaseId, airtableTableName);
+
+                    // Fields mapping: (Make sure these match your Airtable columns!)
+                    // Name (Title), Notes (Content), Attachments (Files), Status (Single Select)
+                    await airtableSaver.saveRecord({
+                        title: aiResult.title,
+                        content: aiResult.content, // Long Text
+                        status: 'Ready to Review', // Single Select option
+                        images: rehostedImages,    // Attachments (Auto-download!)
+                        sourceUrl: articles[0]?.url
+                    });
+
+                    console.log('[PIPELINE] Saved to Airtable successfully.');
+                }
+            } catch (airtableError) {
+                console.error('[PIPELINE] Airtable failed (non-blocking):', airtableError);
+            }
+            // ---------------------------------------------------
 
             // 4. PUBLISHING TO NOTION
             await prisma.job.update({
