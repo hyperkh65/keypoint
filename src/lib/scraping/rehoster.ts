@@ -17,7 +17,7 @@ export class ImageRehoster {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                     'Referer': referer || 'https://tistory.com/',
                 },
-                timeout: 25000,
+                timeout: 5000, // Aggressive timeout: skip slow images fast
                 maxContentLength: 10 * 1024 * 1024, // Max 10MB
                 validateStatus: (status) => status === 200
             });
@@ -105,7 +105,7 @@ export class ImageRehoster {
                     form.append('fileToUpload', processedBuffer, { filename: 'image.jpg', contentType: 'image/jpeg' });
                     const res = await axios.post('https://catbox.moe/user/api.php', form, {
                         headers: { ...form.getHeaders() },
-                        timeout: 30000
+                        timeout: 8000
                     });
                     const result = String(res.data).trim();
                     return result.startsWith('http') ? result : null;
@@ -121,7 +121,7 @@ export class ImageRehoster {
                     }
                 } catch (e: any) {
                     console.warn(`[REHOST] Host failure: ${e.message}`);
-                    await new Promise(r => setTimeout(r, 1000));
+                    await new Promise(r => setTimeout(r, 200));
                 }
             }
 
