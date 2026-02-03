@@ -22,8 +22,8 @@ export class ImageRehoster {
                 validateStatus: (status) => status === 200
             });
 
-            if (!response.data || response.data.length < 20000) {
-                console.log('[REHOST] Rejected: Too small');
+            if (!response.data || response.data.length < 30000) {
+                console.log('[REHOST] Rejected: Too small (min 30KB)');
                 return null;
             }
 
@@ -39,8 +39,8 @@ export class ImageRehoster {
                     return null;
                 }
 
-                if (metadata.width < 300 || metadata.height < 200) {
-                    console.log(`[REHOST] Rejected: Too small (${metadata.width}x${metadata.height})`);
+                if (metadata.width < 400 || metadata.height < 300) {
+                    console.log(`[REHOST] Rejected: Too small (${metadata.width}x${metadata.height}, min 400x300)`);
                     return null;
                 }
 
