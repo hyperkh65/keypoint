@@ -18,16 +18,12 @@ export async function POST(req: Request) {
         }
     });
 
-    // Trigger automation in background (non-blocking)
-    const baseUrl = process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : 'http://localhost:3000';
-
-    fetch(`${baseUrl}/api/jobs/run`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jobId: job.id })
-    }).catch(err => console.error('Background job trigger failed:', err));
+    // Start automation immediately (fire and forget)
+    const { AutomationManager } = await import('@/lib/automation/manager');
+    const manager = new AutomationManager();
+    manager.runJob(job.id).catch(err => {
+        console.error('Job execution error:', err);
+    });
 
     return NextResponse.json(job);
 }
