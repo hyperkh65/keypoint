@@ -3,14 +3,14 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Job {
   id           String   @id @default(uuid())
   keyword      String
-  status       String   @default("PENDING") // PENDING, SCRAPING, MERGING, SAVING, COMPLETED, FAILED
+  status       String   @default("PENDING")
   currentStep  String?
   notionUrl    String?
   errorMessage String?
@@ -18,17 +18,21 @@ model Job {
   updatedAt    DateTime @updatedAt
   articles     Article[]
   result       ContentResult?
+
+  @@map("aaaaa_Job")
 }
 
 model Article {
   id        String   @id @default(uuid())
   jobId     String
-  source    String   // Naver, Google, Tistory
+  source    String   
   url       String
   title     String
   content   String
   createdAt DateTime @default(now())
   job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@map("aaaaa_Article")
 }
 
 model ContentResult {
@@ -36,13 +40,17 @@ model ContentResult {
   jobId       String   @unique
   title       String
   content     String
-  imageUrls   String?  // JSON string
+  imageUrls   String?  
   createdAt   DateTime @default(now())
   job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@map("aaaaa_ContentResult")
 }
 
 model Setting {
   id    String @id @default(uuid())
   key   String @unique
   value String
+
+  @@map("aaaaa_Setting")
 }
