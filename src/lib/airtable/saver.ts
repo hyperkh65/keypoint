@@ -20,9 +20,11 @@ export class AirtableSaver {
     }) {
         const url = `https://api.airtable.com/v0/${this.baseId}/${encodeURIComponent(this.tableName)}`;
 
-        // Transform images to Airtable attachment format
-        // Example: [{ "url": "https://..." }, { "url": "https://..." }]
-        const attachments = data.images.map(imgUrl => ({ url: imgUrl }));
+        // Transform images to Airtable attachment format with explicit filenames
+        const attachments = data.images.map((imgUrl, index) => ({
+            url: imgUrl,
+            filename: `image_${index + 1}.jpg` // Explicit filename ensures correct preview
+        }));
 
         try {
             const response = await axios.post(url, {
