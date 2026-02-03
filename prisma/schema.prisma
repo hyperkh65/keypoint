@@ -19,6 +19,9 @@ model Job {
   image3       String?
   image4       String?
   image5       String?
+  body         String?  @db.Text
+  finalTitle   String?
+  isPublished  Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   articles     Article[]

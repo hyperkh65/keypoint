@@ -1,4 +1,5 @@
 import { prisma } from '../db';
+import crypto from 'crypto';
 import { ScrapingEngine } from '../scraping/engine';
 import { AIMerger } from '../ai/merger';
 import { NotionSaver } from '../notion/saver';
@@ -110,8 +111,37 @@ export class AutomationManager {
                 }
             }
 
-            // 4. Saving to Notion
-            await prisma.job.update({ where: { id: jobId }, data: { status: 'SAVING', currentStep: '노션으로 50장의 이미지와 리포트 전송 중...' } });
+            // 3.5. SAVE TO DB FIRST (PIPELINE FIX)
+            await prisma.job.update({
+                where: { id: jobId },
+                data: {
+                    status: 'SAVING_DB',
+                    currentStep: '생성된 리포트를 DB에 안전하게 저장 중...',
+                    body: aiResult.content,
+                    finalTitle: aiResult.title
+                }
+            });
+
+            // Also save to ContentResult table for backup/future use
+            await prisma.contentResult.create({
+                data: {
+                    id: crypto.randomUUID(),
+                    jobId: jobId,
+                    title: aiResult.title,
+                    content: aiResult.content,
+                    imageUrls: rehostedImages.join(',')
+                }
+            });
+
+            // 4. PUBLISHING TO NOTION
+            await prisma.job.update({
+                where: { id: jobId },
+                data: {
+                    status: 'PUBLISHING',
+                    currentStep: '노션으로 50장의 이미지와 리포트 전송 중...'
+                }
+            });
+
             const saver = new NotionSaver(notionToken);
             const notionPage = await saver.saveArticle(notionDbId, {
                 title: aiResult.title,
@@ -127,7 +157,8 @@ export class AutomationManager {
                 data: {
                     status: 'COMPLETED',
                     currentStep: '모든 작업 완료! 노션과 대시보드에서 결과를 확인하세요.',
-                    notionUrl: (notionPage as any).url
+                    notionUrl: (notionPage as any).url,
+                    isPublished: true
                 }
             });
 
