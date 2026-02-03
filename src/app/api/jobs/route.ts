@@ -18,8 +18,16 @@ export async function POST(req: Request) {
         }
     });
 
-    // Start automation in background (not blocking)
-    // In a real production app, use a worker, but for this agentic demo, we'll trigger an internal API or just start it.
+    // Trigger automation in background (non-blocking)
+    const baseUrl = process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : 'http://localhost:3000';
+
+    fetch(`${baseUrl}/api/jobs/run`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jobId: job.id })
+    }).catch(err => console.error('Background job trigger failed:', err));
 
     return NextResponse.json(job);
 }
