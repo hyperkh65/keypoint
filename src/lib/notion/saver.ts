@@ -7,10 +7,9 @@ export class NotionSaver {
         this.notion = new Client({ auth: token });
     }
 
-    async saveArticle(parentId: string, data: { title: string, content: string, tags: string[], url?: string, images?: string[] }) {
+    async saveArticle(parentId: string, data: { title: string, content: string, tags: string[], url?: string, images?: string[], topImages?: string[] }) {
         try {
             const blocks: any[] = [];
-
             // 1. Add Callout for Source Link
             if (data.url) {
                 blocks.push({
@@ -43,23 +42,34 @@ export class NotionSaver {
                 }
             }
 
-            // 4. Create Page - EXACT MATCH with User's Notion Columns (Sources, Tags, title)
             const initialBlocks = blocks.slice(0, 100);
             const remainingBlocks = blocks.slice(100);
 
+            const properties: any = {
+                title: {
+                    title: [{ text: { content: data.title } }]
+                },
+                Tags: {
+                    multi_select: data.tags.map(t => ({ name: t.substring(0, 100).replace(/,/g, '') }))
+                },
+                Sources: {
+                    url: data.url || 'https://www.notion.so'
+                }
+            };
+
+            // Map top images to columns if present
+            if (data.topImages) {
+                data.topImages.forEach((imgUrl, index) => {
+                    const key = `image${index + 1}`;
+                    properties[key] = {
+                        files: [{ name: `${key}.jpg`, type: 'external', external: { url: imgUrl } }]
+                    };
+                });
+            }
+
             const response = await this.notion.pages.create({
                 parent: { database_id: parentId },
-                properties: {
-                    title: {
-                        title: [{ text: { content: data.title } }]
-                    },
-                    Tags: {
-                        multi_select: data.tags.map(t => ({ name: t.substring(0, 100).replace(/,/g, '') }))
-                    },
-                    Sources: { // Successfully matched user's 'Sources' column
-                        url: data.url || 'https://www.notion.so'
-                    }
-                },
+                properties: properties,
                 children: initialBlocks
             });
 

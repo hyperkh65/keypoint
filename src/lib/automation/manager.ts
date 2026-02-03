@@ -118,7 +118,8 @@ export class AutomationManager {
                 content: aiResult.content,
                 tags: aiResult.tags,
                 url: articles[0]?.url,
-                images: rehostedImages
+                images: rehostedImages,
+                topImages: rehostedImages.slice(0, 5)
             });
 
             await prisma.job.update({
