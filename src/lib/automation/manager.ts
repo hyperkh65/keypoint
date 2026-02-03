@@ -22,10 +22,10 @@ export class AutomationManager {
         }
 
         try {
-            // 1. Ultra-Deep Scraping
+            // 1. Optimized Deep Scraping
             await prisma.job.update({
                 where: { id: jobId },
-                data: { status: 'SCRAPING', currentStep: '고화질 이미지 400장 전수 조사 중...' }
+                data: { status: 'SCRAPING', currentStep: '고품질 이미지 200장 핵심 선별 중...' }
             });
             const scraper = new ScrapingEngine();
             const articles = await scraper.searchAndScrape(job.keyword);
@@ -47,7 +47,7 @@ export class AutomationManager {
 
             const rehostedImages: string[] = [];
             const MAX_IMAGES = 50;
-            const candidates = imageBatch.slice(0, 200); // Massive pool for best selection
+            const candidates = imageBatch.slice(0, 100); // Optimized pool (Speed/Quality Balance)
 
             // STEP 2-A: Process first 10 candidates FAST to get top 5 images ASAP
             const quickChunk = candidates.slice(0, 10);

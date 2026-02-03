@@ -35,8 +35,8 @@ export class ScrapingEngine {
 
         console.log(`[SCRAPE] ${allLinks.length} total sources found.`);
 
-        // Probe up to 20 articles to maximize image pool
-        for (const item of allLinks.slice(0, 20)) {
+        // Probe up to 10 articles (Optimized for 2x speed)
+        for (const item of allLinks.slice(0, 10)) {
             if (results.length >= 8) break;
 
             let content = null;
