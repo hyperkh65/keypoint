@@ -47,7 +47,7 @@ export class AutomationManager {
 
             const rehostedImages: string[] = [];
             const MAX_IMAGES = 50;
-            const candidates = imageBatch.slice(0, 40);
+            const candidates = imageBatch.slice(0, 100);
 
             // STEP 2-A: Process first 10 candidates FAST to get top 5 images ASAP
             const quickChunk = candidates.slice(0, 10);
