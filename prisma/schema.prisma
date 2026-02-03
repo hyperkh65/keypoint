@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Job {
+  id           String   @id @default(uuid())
+  keyword      String
+  status       String   @default("PENDING") // PENDING, SCRAPING, MERGING, SAVING, COMPLETED, FAILED
+  currentStep  String?
+  notionUrl    String?
+  errorMessage String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  articles     Article[]
+  result       ContentResult?
+}
+
+model Article {
+  id        String   @id @default(uuid())
+  jobId     String
+  source    String   // Naver, Google, Tistory
+  url       String
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+model ContentResult {
+  id          String   @id @default(uuid())
+  jobId       String   @unique
+  title       String
+  content     String
+  imageUrls   String?  // JSON string
+  createdAt   DateTime @default(now())
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+model Setting {
+  id    String @id @default(uuid())
+  key   String @unique
+  value String
+}
