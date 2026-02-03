@@ -27,7 +27,7 @@ model Job {
   articles     Article[]
   result       ContentResult?
 
-  @@map("aaaaa_Job")
+  @@map("bbbbb_Job")
 }
 
 model Article {
@@ -40,7 +40,7 @@ model Article {
   createdAt DateTime @default(now())
   job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
 
-  @@map("aaaaa_Article")
+  @@map("bbbbb_Article")
 }
 
 model ContentResult {
@@ -52,7 +52,7 @@ model ContentResult {
   createdAt   DateTime @default(now())
   job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
 
-  @@map("aaaaa_ContentResult")
+  @@map("bbbbb_ContentResult")
 }
 
 model Setting {
@@ -60,5 +60,5 @@ model Setting {
   key   String @unique
   value String
 
-  @@map("aaaaa_Setting")
+  @@map("bbbbb_Setting")
 }
