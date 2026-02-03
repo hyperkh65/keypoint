@@ -11,15 +11,13 @@ export interface ScrapedArticle {
 
 export class ScrapingEngine {
     async searchAndScrape(keyword: string): Promise<ScrapedArticle[]> {
-        console.log(`[SCRAPE] Starting Ultra-Deep Image Collection: ${keyword}`);
+        console.log(`[SCRAPE] Fast Image Collection: ${keyword}`);
         const results: ScrapedArticle[] = [];
 
-        // Use 4 different search queries to cast a wider net
+        // Use 2 focused search queries for speed
         const queries = [
             keyword + ' site:tistory.com',
-            keyword + ' 블로그 리뷰',
-            keyword + ' 후기 사진',
-            keyword + ' 포스팅'
+            keyword + ' 블로그 리뷰'
         ];
 
         const allLinks: { url: string, source: any }[] = [];
@@ -33,11 +31,11 @@ export class ScrapingEngine {
             });
         }
 
-        console.log(`[SCRAPE] ${allLinks.length} total sources found.`);
+        console.log(`[SCRAPE] ${allLinks.length} sources found.`);
 
-        // Probe up to 20 articles to maximize image pool
-        for (const item of allLinks.slice(0, 20)) {
-            if (results.length >= 15) break;
+        // Probe up to 8 articles for ~100 image candidates
+        for (const item of allLinks.slice(0, 8)) {
+            if (results.length >= 8) break;
 
             let content = null;
             if (item.source === 'TISTORY') {

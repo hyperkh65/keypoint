@@ -22,10 +22,10 @@ export class AutomationManager {
         }
 
         try {
-            // 1. Ultra-Deep Scraping
+            // 1. Fast Scraping
             await prisma.job.update({
                 where: { id: jobId },
-                data: { status: 'SCRAPING', currentStep: '고화질 이미지 400장 전수 조사 및 리스트업 중...' }
+                data: { status: 'SCRAPING', currentStep: '고품질 이미지 100장 빠른 수집 중...' }
             });
             const scraper = new ScrapingEngine();
             const articles = await scraper.searchAndScrape(job.keyword);
@@ -35,7 +35,7 @@ export class AutomationManager {
             // 2. IMAGE RE-HOSTING, RESIZING & QUICK PREVIEW
             await prisma.job.update({
                 where: { id: jobId },
-                data: { status: 'SCRAPING', currentStep: '대표 이미지 5장 즉시 최적화 및 DB 업로드 중...' }
+                data: { status: 'SCRAPING', currentStep: '대표 이미지 5장 즉시 최적화 중...' }
             });
 
             const imageBatch: { url: string, referer: string }[] = [];
@@ -47,7 +47,7 @@ export class AutomationManager {
 
             const rehostedImages: string[] = [];
             const MAX_IMAGES = 50;
-            const candidates = imageBatch.slice(0, 80);
+            const candidates = imageBatch.slice(0, 40);
 
             // STEP 2-A: Process first 10 candidates FAST to get top 5 images ASAP
             const quickChunk = candidates.slice(0, 10);
