@@ -152,7 +152,7 @@ export class AutomationManager {
                         title: aiResult.title,
                         content: aiResult.content, // Long Text
                         status: 'Ready to Review', // Single Select option
-                        images: rehostedImages,    // Attachments (Auto-download!)
+                        images: rehostedImages.slice(0, 10),    // Limit to 10 to prevent Airtable download timeout
                         sourceUrl: articles[0]?.url
                     });
 
