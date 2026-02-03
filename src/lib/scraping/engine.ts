@@ -75,7 +75,7 @@ export class ScrapingEngine {
             ];
 
             patterns.forEach(p => {
-                (data.match(p) || []).forEach(l => {
+                (data.match(p) || []).forEach((l: string) => {
                     const clean = l.split('\\').join('').split('&quot;').join('').split('%22').join('');
                     if (!links.includes(clean)) links.push(clean);
                 });
