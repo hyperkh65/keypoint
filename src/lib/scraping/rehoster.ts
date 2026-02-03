@@ -20,16 +20,30 @@ export class ImageRehoster {
                 timeout: 25000
             });
 
-            if (!response.data || response.data.length < 1000) return null;
+            if (!response.data || response.data.length < 5000) return null; // Skip tiny/broken images
 
-            // 2. Normalize & Resize (Max 1200px for speed and reliability)
-            // Smaller images are more likely to be accepted by free hosts
+            // 2. Smart Processing: Preserve quality while optimizing size
             let processedBuffer: Buffer;
             try {
-                processedBuffer = await sharp(response.data)
-                    .resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
-                    .jpeg({ quality: 80, progressive: true })
-                    .toBuffer();
+                const image = sharp(response.data);
+                const metadata = await image.metadata();
+
+                // Only resize if image is actually large
+                if (metadata.width && metadata.width > 1600) {
+                    processedBuffer = await image
+                        .resize(1600, 1600, {
+                            fit: 'inside',
+                            withoutEnlargement: true,
+                            kernel: sharp.kernel.lanczos3 // Better quality
+                        })
+                        .jpeg({ quality: 92, progressive: true, chromaSubsampling: '4:4:4' })
+                        .toBuffer();
+                } else {
+                    // Small images: keep original or minimal processing
+                    processedBuffer = await image
+                        .jpeg({ quality: 95, progressive: true, chromaSubsampling: '4:4:4' })
+                        .toBuffer();
+                }
                 console.log(`[REHOST] Optimized to ${(processedBuffer.length / 1024).toFixed(0)}KB`);
             } catch {
                 processedBuffer = response.data;
