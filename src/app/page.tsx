@@ -83,14 +83,8 @@ export default function Dashboard() {
       });
 
       if (!res.ok) throw new Error(`Job creation failed`);
-      const job = await res.json();
 
-      await fetch('/api/jobs/run', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jobId: job.id }),
-      });
-
+      // Backend automatically starts the job, no need to call /api/jobs/run
       setKeyword('');
       fetchJobs();
     } catch (e: any) {
